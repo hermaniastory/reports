@@ -1,0 +1,61 @@
+# ============================================================
+# .github/workflows/deploy.yml — PD-04 // FIELD REPORTS
+# ------------------------------------------------------------
+# Отдельный репозиторий отчётов, только GitHub Pages.
+# При каждом пуше в main/master: берёт файлы из КОРНЯ репо,
+# сжимает html/js/css (без комментариев), остальное копирует
+# как есть и публикует на GitHub Pages.
+#
+# ВАЖНО: Settings → Pages → Source = "GitHub Actions".
+# Если стоит "Deploy from a branch" — GitHub выложит файлы
+# как есть, С комментариями, и этот workflow не используется.
+# ============================================================
+name: build-and-deploy-reports
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install minifiers
+        run: npm install --no-save terser clean-css html-minifier-terser
+
+      - name: Build (minify into dist/)
+        run: node .github/scripts/build.mjs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
