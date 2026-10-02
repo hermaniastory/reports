@@ -1,38 +1,4 @@
-/* ============================================================
-   reports-engine.js  —  PANDEMONIUM-04 // FIELD REPORTS ENGINE
-   ------------------------------------------------------------
-   The only shared logic. NEVER needs editing when you add a
-   report. Each report lives in its own report-*.js file and
-   registers itself:
- 
-     registerReport({
-       id:'...', code:'...', title:'...',
-       tag:'...', tagLabel:'...', date:'...',
-       pilot:'...',            // optional — for search/grouping
-       author:true,            // optional — OOC / red author-glow
-       styles:`...css...`,     // optional — per-report scoped CSS
-       tabs:[ { id:'...', label:'...', html:`...` }, ... ]
-     });
- 
-   LOAD ORDER (in reports.html, bottom of <body>):
-     <script src="reports-engine.js"></script>   ← first
-     <script src="report-kaela.js"></script>
-     <script src="report-slime.js"></script>
-     ...                                          ← reports after
- 
-   PER-REPORT STYLES (isolation):
-   Whatever you put in `styles` is auto-scoped to that report only.
-   Write plain selectors — the engine wraps them in
-   [data-report="<id>"]{ ... } using CSS nesting, so they can never
-   leak into another pilot's report. Use `&{...}` to style the
-   viewer container itself. (Needs a modern browser — nesting is
-   supported everywhere current; if absent, the report just falls
-   back to the shared base styles.)
- 
-   Helpers exposed globally for report files / inline handlers:
-     registerReport, ph, filterReports, openPhotoModal, closePhotoModal
-   ============================================================ */
- 
+
 (function () {
   'use strict';
  
